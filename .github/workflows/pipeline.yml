@@ -11,5 +11,9 @@ jobs:
       - uses: actions/setup-node@v4
       - name: Install Dependencies
         run: npm install
-      - name: Lint Code
+      - name: Lint
         run: npm run eslint
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm run test
