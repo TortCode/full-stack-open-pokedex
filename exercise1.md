@@ -1,4 +1,5 @@
 We consider the Java language.
+
 # Ecosystem Tools
 Some Linters available for Java are:
 - SpotBugs
@@ -13,6 +14,7 @@ Popular build tools for Java are:
 - Apache Ant
 - Gradle
 - Apache Maven
+
 # Alternative CI tools
 Alternatives to Jenkins and GH Actions include:
 - Gitlab CI
@@ -23,6 +25,7 @@ Alternatives to Jenkins and GH Actions include:
 - TravisCI
 - Google Cloud Build
 Many of the CI tools are developed by a cloud provider or git hosting provider in which case they integrate best with the platform created by that provider.
+
 # Self/Cloud-Hosted
 The determination depends on several factors such as:
 - Is the code already cloud hosted?
