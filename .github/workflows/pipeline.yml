@@ -11,7 +11,9 @@ on:
       - synchronize
 
 env:
-   SKIP_DEPLOY: ${{ contains(join(github.event.commits.*.message), '#skip') }}
+  SKIP_DEPLOY: ${{ contains(join(github.event.commits.*.message), '#skip') }}
+  AUTHOR: ${{ github.event_name == 'push' && github.event.pusher.username || github.event.pull_request.user.login }}
+  COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
   
 jobs:
   simple_deployment_pipeline:
@@ -34,8 +36,25 @@ jobs:
           start: npm run start-prod
           wait-on: http://localhost:8080
       - name: Trigger Deploy
+        id: trigger_deploy
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
         if: ${{ github.env.SKIP_DEPLOY == 'false' && github.event_name == 'push' }}
+      - name: Notify Deploy
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        with:
+          text: A new version of Pokedex deployed
+          severity: info
+          details: to https://full-stack-open-pokedex-s7q2.onrender.com/ by ${{ github.env.AUTHOR }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+        if: ${{ steps.trigger_deploy.conclusion == 'success' }}
+      - name: Notify Error
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        with:
+          text: Build failed
+          severity: error
+          details: commit ${{ github.env.COMMIT_URL }} by ${{ github.env.AUTHOR }} broke the build
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+        if: ${{ failure() }}
   tag_release:
     needs: 
       - simple_deployment_pipeline
