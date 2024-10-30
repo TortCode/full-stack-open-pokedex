@@ -40,20 +40,24 @@ jobs:
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
         if: ${{ env.SKIP_DEPLOY == 'false' && github.event_name == 'push' }}
       - name: Notify Deploy
-        uses: rjstone/discord-webhook-notify@v1.0.0
+        uses: sarisia/actions-status-discord@v1.15.0
         with:
-          text: A new version of Pokedex deployed
-          severity: info
+          title: A new version of Pokedex deployed
+          status: Success
+          color: 0x00ff00
           description: to https://full-stack-open-pokedex-s7q2.onrender.com/ by ${{ github.env.AUTHOR }}
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          username: Github Actions
         if: ${{ steps.trigger_deploy.conclusion == 'success' }}
       - name: Notify Error
-        uses: rjstone/discord-webhook-notify@v1.0.0
+        uses: sarisia/actions-status-discord@v1.15.0
         with:
-          text: Build failed
-          severity: error
+          title: Build failed
+          status: Failure
+          color: 0xff0000
           description: commit ${{ env.COMMIT_URL }} by ${{ env.AUTHOR }} broke the build
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          username: Github Actions
         if: ${{ failure() }}
   tag_release:
     needs: 
