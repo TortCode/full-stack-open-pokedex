@@ -16,13 +16,6 @@ env:
   COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
   
 jobs:
-  debug:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Debug Messages
-        env:
-          MSGS: ${{ join(github.event.commits.*.message) }}
-        run: echo "$MSGS" "${{ env.SKIP_DEPLOY }} ${{ github.event_name }}"
   simple_deployment_pipeline:
     runs-on: ubuntu-20.04
     steps:
