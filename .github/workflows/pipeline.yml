@@ -12,7 +12,7 @@ on:
 
 env:
   SKIP_DEPLOY: ${{ contains(join(github.event.commits.*.message), '#skip') }}
-  AUTHOR: ${{ github.event_name == 'push' && github.event.pusher.username || github.event.pull_request.user.login }}
+  AUTHOR: ${{ github.event_name == 'push' && github.event.head_commit.author.name || github.event.pull_request.user.login }}
   COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
   
 jobs:
@@ -40,19 +40,19 @@ jobs:
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
         if: ${{ env.SKIP_DEPLOY == 'false' && github.event_name == 'push' }}
       - name: Notify Deploy
-        uses: rjstone/discord-webhook-notify@v1.0.4
+        uses: rjstone/discord-webhook-notify@v1.0.0
         with:
           text: A new version of Pokedex deployed
           severity: info
-          details: to https://full-stack-open-pokedex-s7q2.onrender.com/ by ${{ github.env.AUTHOR }}
+          description: to https://full-stack-open-pokedex-s7q2.onrender.com/ by ${{ github.env.AUTHOR }}
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
         if: ${{ steps.trigger_deploy.conclusion == 'success' }}
       - name: Notify Error
-        uses: rjstone/discord-webhook-notify@v1.0.4
+        uses: rjstone/discord-webhook-notify@v1.0.0
         with:
           text: Build failed
           severity: error
-          details: commit ${{ env.COMMIT_URL }} by ${{ env.AUTHOR }} broke the build
+          description: commit ${{ env.COMMIT_URL }} by ${{ env.AUTHOR }} broke the build
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
         if: ${{ failure() }}
   tag_release:
