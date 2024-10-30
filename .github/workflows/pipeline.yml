@@ -39,7 +39,6 @@ jobs:
         env:
           MSGS: ${{ join(github.event.commits.*.message) }}
         run: echo "$MSGS" "${{ github.env.SKIP_DEPLOY }} ${{ github.event_name }}"
-      - name: 
       - name: Trigger Deploy
         id: trigger_deploy
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
