@@ -45,7 +45,7 @@ jobs:
           title: A new version of Pokedex deployed
           status: Success
           color: 0x00ff00
-          description: to https://full-stack-open-pokedex-s7q2.onrender.com/ by ${{ github.env.AUTHOR }}
+          description: to https://full-stack-open-pokedex-s7q2.onrender.com/ by ${{ env.AUTHOR }}
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           username: Github Actions
         if: ${{ steps.trigger_deploy.conclusion == 'success' }}
