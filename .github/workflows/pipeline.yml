@@ -16,6 +16,13 @@ env:
   COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
   
 jobs:
+  debug:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Debug Messages
+        env:
+          MSGS: ${{ join(github.event.commits.*.message) }}
+        run: echo "$MSGS" "${{ env.SKIP_DEPLOY }} ${{ github.event_name }}"
   simple_deployment_pipeline:
     runs-on: ubuntu-20.04
     steps:
@@ -35,14 +42,10 @@ jobs:
           command: npm run test:e2e
           start: npm run start-prod
           wait-on: http://localhost:8080
-      - name: Debug Messages
-        env:
-          MSGS: ${{ join(github.event.commits.*.message) }}
-        run: echo "$MSGS" "${{ github.env.SKIP_DEPLOY }} ${{ github.event_name }}"
       - name: Trigger Deploy
         id: trigger_deploy
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-        if: ${{ github.env.SKIP_DEPLOY == 'false' && github.event_name == 'push' }}
+        if: ${{ env.SKIP_DEPLOY == 'false' && github.event_name == 'push' }}
       - name: Notify Deploy
         uses: rjstone/discord-webhook-notify@v1.0.4
         with:
@@ -56,7 +59,7 @@ jobs:
         with:
           text: Build failed
           severity: error
-          details: commit ${{ github.env.COMMIT_URL }} by ${{ github.env.AUTHOR }} broke the build
+          details: commit ${{ env.COMMIT_URL }} by ${{ env.AUTHOR }} broke the build
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
         if: ${{ failure() }}
   tag_release:
